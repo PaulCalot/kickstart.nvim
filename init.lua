@@ -2,8 +2,7 @@
   - <space>sh : search the help documentation (:help)
   - :checkhealth : more information if error when installating config
   - :Telescope help_tags - ligne 250~ pour les raccourcis intéressants
-  - autoformat : <leader>f
-  - line 596, super useful stuff : 
+  - autoformat : <leader>f - line 596, super useful stuff : 
       --  - va)  - [V]isually select [A]round [)]paren
       --  - yinq - [Y]ank [I]nside [N]ext [']quote
       --  - ci'  - [C]hange [I]nside [']quote
@@ -514,7 +513,6 @@ require('lazy').setup({
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         python = { 'isort', 'black' },
-        --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
         -- javascript = { { "prettierd", "prettier" } },
@@ -626,7 +624,114 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    'GCBallesteros/NotebookNavigator.nvim',
+    keys = {
+      {
+        ']h',
+        function()
+          require('notebook-navigator').move_cell 'd'
+        end,
+      },
+      {
+        '[h',
+        function()
+          require('notebook-navigator').move_cell 'u'
+        end,
+      },
+      { '<leader>X', "<cmd>lua require('notebook-navigator').run_cell()<cr>" },
+      { '<leader>x', "<cmd>lua require('notebook-navigator').run_and_move()<cr>" },
+    },
+    dependencies = {
+      'echasnovski/mini.comment',
+      'hkupty/iron.nvim', -- repl provider
+      -- "akinsho/toggleterm.nvim", -- alternative repl provider
+      -- "benlubas/molten-nvim", -- alternative repl provider
+      'anuvyklack/hydra.nvim',
+    },
+    event = 'VeryLazy',
+    config = function()
+      local nn = require 'notebook-navigator'
+      nn.setup { activate_hydra_keys = '<leader>h' }
+    end,
+  },
+  {
+    'GCBallesteros/jupytext.nvim',
+    config = true,
+    -- Depending on your nvim distro or config you may need to make the loading not lazy
+    -- lazy=false,
+    style = 'hydrogen',
+    output_extension = 'auto', -- Default extension. Don't change unless you know what you are doing
+    force_ft = nil, -- Default filetype. Don't change unless you know what you are doing
+    custom_language_formatting = {},
+  },
+  {
+    'echasnovski/mini.hipatterns',
+    event = 'VeryLazy',
+    dependencies = { 'GCBallesteros/NotebookNavigator.nvim' },
+    opts = function()
+      local nn = require 'notebook-navigator'
 
+      local opts = { highlighters = { cells = nn.minihipatterns_spec } }
+      return opts
+    end,
+  },
+  {
+    'hkupty/iron.nvim',
+    config = function()
+      local iron = require 'iron.core'
+      local view = require 'iron.view'
+
+      iron.setup {
+        config = {
+          -- Whether a repl should be discarded or not
+          scratch_repl = true,
+          -- Your repl definitions come here
+          repl_definition = {
+            sh = {
+              -- Can be a table or a function that
+              -- returns a table (see below)
+              command = { 'zsh' },
+            },
+          },
+          -- How the repl window will be displayed
+          -- See below for more information
+          repl_open_cmd = view.split.vertical.botright(50),
+          -- repl_open_cmd = require('iron.view').bottom(40),
+        },
+        -- Iron doesn't set keymaps by default anymore.
+        -- You can set them here or manually add keymaps to the functions in iron.core
+        -- keymaps = {
+        --   send_motion = '<space>sc',
+        --   visual_send = '<space>sc',
+        --   send_file = '<space>sf',
+        --   send_line = '<space>sl',
+        --   send_paragraph = '<space>sp',
+        --   send_until_cursor = '<space>su',
+        --   send_mark = '<space>sm',
+        --   mark_motion = '<space>mc',
+        --   mark_visual = '<space>mc',
+        --   remove_mark = '<space>md',
+        --   cr = '<space>s<cr>',
+        interrupt = '<space>s<space>',
+        exit = '<space>sq',
+        clear = '<space>cl',
+        -- },
+        -- If the highlight is on, you can change how it looks
+        -- For the available options, check nvim_set_hl
+        highlight = {
+          italic = true,
+        },
+        ignore_blank_lines = true, -- ignore blank lines when sending visual select lines
+      }
+
+      -- iron also has a list of commands, see :h iron-commands for all available commands
+      vim.keymap.set('n', '<space>rs', '<cmd>IronRepl<cr>')
+      vim.keymap.set('n', '<space>rr', '<cmd>IronRestart<cr>')
+      vim.keymap.set('n', '<space>rf', '<cmd>IronFocus<cr>')
+      vim.keymap.set('n', '<space>rh', '<cmd>IronHide<cr>')
+    end,
+  },
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -689,7 +794,9 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'python' },
+      -- should always be installed
+      -- ensure_installed = { 'c', 'lua', 'vim', 'vimdoc', 'query' },
+      ensure_installed = { 'c', 'lua', 'vim', 'vimdoc', 'query', 'bash', 'html', 'luadoc', 'markdown', 'python' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
