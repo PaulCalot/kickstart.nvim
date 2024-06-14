@@ -483,7 +483,14 @@ require('lazy').setup({
       }
     end,
   },
-
+  {
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    ft = { 'markdown' },
+    build = function()
+      vim.fn['mkdp#util#install']()
+    end,
+  },
   { -- Autoformat
     'stevearc/conform.nvim',
     lazy = false,
@@ -688,6 +695,9 @@ require('lazy').setup({
           scratch_repl = true,
           -- Your repl definitions come here
           repl_definition = {
+            python = {
+              command = { 'python' },
+            },
             sh = {
               -- Can be a table or a function that
               -- returns a table (see below)
