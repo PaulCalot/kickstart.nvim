@@ -442,7 +442,7 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        tsserver = {},
+        ts_ls = {},
         --
 
         lua_ls = {
@@ -855,24 +855,13 @@ require('lazy').setup({
   },
   {
     'kkoomen/vim-doge',
-    build = ":call doge#install()", -- Automatically install vim-doge binaries
+    build = ':call doge#install()', -- Automatically install vim-doge binaries
     config = function()
       -- Enable vim-doge
       vim.g.doge_enable = 1
       -- Set the docstring style to Google
-      vim.g.doge_doc_standard_python = "google"
+      vim.g.doge_doc_standard_python = 'google'
       -- Map """ to generate docstrings in insert mode for Python
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = "python",
-        callback = function()
-          vim.api.nvim_set_keymap(
-            "i",
-            '"""',
-            '"""<C-o>:DogeGenerate<CR>',
-            { noremap = true, silent = true }
-          )
-        end,
-      })
     end,
   },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
