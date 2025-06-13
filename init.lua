@@ -324,8 +324,14 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for Neovim
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
+      { 'williamboman/mason.nvim', opts = {} },
+      {
+        'williamboman/mason-lspconfig.nvim',
+        opts = {
+          ensure_installed = { 'pyright' }, -- Ensure pyright is installed
+          automatic_installation = true, -- Let mason-lspconfig handle installation
+        },
+      },
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
@@ -431,10 +437,26 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        pyright = {},
+        pyright = {
+          -- settings = {
+          --   python = {
+          --     pythonPath = function()
+          --       local venv_path = os.getenv 'VIRTUAL_ENV'
+          --       if venv_path then
+          --         local is_windows = vim.loop.os_uname().sysname == 'Windows_NT'
+          --         local path_sep = is_windows and '\\' or '/'
+          --         local python_exec = is_windows and 'Scripts/python.exe' or 'bin/python3'
+          --         return venv_path .. path_sep .. python_exec
+          --       end
+          --       return vim.fn.exepath 'python3' or 'python3'
+          --     end,
+          --   },
+          -- },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -503,6 +525,9 @@ require('lazy').setup({
     ft = { 'markdown' },
     build = function()
       vim.fn['mkdp#util#install']()
+    end,
+    config = function()
+      vim.g.mkdp_echo_preview_url = 1
     end,
   },
   {
