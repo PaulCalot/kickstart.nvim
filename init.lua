@@ -520,15 +520,13 @@ require('lazy').setup({
     opts = {},
   },
   {
-    'iamcco/markdown-preview.nvim',
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    ft = { 'markdown' },
-    build = function()
-      vim.fn['mkdp#util#install']()
-    end,
-    config = function()
-      vim.g.mkdp_echo_preview_url = 1
-    end,
+      'brianhuster/live-preview.nvim',
+      dependencies = {
+          -- You can choose one of the following pickers
+          'nvim-telescope/telescope.nvim',
+          -- 'ibhagwan/fzf-lua',
+          -- 'echasnovski/mini.pick',
+      },
   },
   {
     'stevearc/conform.nvim',
@@ -780,10 +778,8 @@ require('lazy').setup({
       vim.cmd.hi 'Comment gui=none'
     end,
   },
-
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
