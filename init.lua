@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -198,10 +198,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -408,6 +408,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<leader>sa', builtin.find_files { hidden = true, no_ignore = true }, { desc = '[S]earch [A]ll' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -602,7 +603,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -697,10 +698,15 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        typescript = { 'prettierd', stop_after_first = true },
+        json = { 'prettierd' },
+        css = { 'prettierd' },
+        html = { 'prettierd' },
+        markdown = { 'prettierd' },
       },
     },
   },
@@ -875,7 +881,7 @@ require('lazy').setup({
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
       -- ensure basic parser are installed
-      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python' }
       require('nvim-treesitter').install(parsers)
 
       ---@param buf integer
@@ -918,6 +924,54 @@ require('lazy').setup({
         end,
       })
     end,
+  },
+
+  -- From this on, those are packages i added
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
+    config = function()
+      local harpoon = require 'harpoon'
+
+      harpoon:setup()
+
+      vim.keymap.set('n', '<leader>a', function() harpoon:list():add() end)
+      vim.keymap.set('n', '<C-e>', function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+
+      -- TODO: is this really the ones I want ?
+      -- may be add more if its the case
+      vim.keymap.set('n', '<leader>1', function() harpoon:list():select(1) end)
+      vim.keymap.set('n', '<leader>2', function() harpoon:list():select(2) end)
+      vim.keymap.set('n', '<leader>3', function() harpoon:list():select(3) end)
+      vim.keymap.set('n', '<leader>4', function() harpoon:list():select(4) end)
+      vim.keymap.set('n', '<leader>5', function() harpoon:list():select(5) end)
+      vim.keymap.set('n', '<leader>6', function() harpoon:list():select(6) end)
+      vim.keymap.set('n', '<leader>7', function() harpoon:list():select(7) end)
+      vim.keymap.set('n', '<leader>8', function() harpoon:list():select(8) end)
+      vim.keymap.set('n', '<leader>9', function() harpoon:list():select(9) end)
+      vim.keymap.set('n', '<leader>0', function() harpoon:list():select(0) end)
+    end,
+  },
+
+  {
+    'kkoomen/vim-doge',
+    build = ':call doge#install()', -- Automatically install vim-doge binaries
+    config = function()
+      -- Enable vim-doge
+      vim.g.doge_enable = 1
+      -- Set the docstring style to Google
+      vim.g.doge_doc_standard_python = 'google'
+      -- Map """ to generate docstrings in insert mode for Python
+    end,
+  },
+
+  'brianhuster/live-preview.nvim',
+  dependencies = {
+    -- You can choose one of the following pickers
+    'nvim-telescope/telescope.nvim',
+    -- 'ibhagwan/fzf-lua',
+    -- 'echasnovski/mini.pick',
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
